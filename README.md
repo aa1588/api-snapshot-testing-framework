@@ -1,6 +1,6 @@
-# INOW Integration Snapshot Testing Framework
+# API Snapshot Testing Framework
 
-A production-quality snapshot (Golden Master / Approval) testing framework for Spring Boot applications that integrate with Guidewire InsuranceNow (INOW) APIs.
+A production-quality snapshot (Golden Master / Approval) testing framework for Spring Boot applications.
 
 ## Table of Contents
 
