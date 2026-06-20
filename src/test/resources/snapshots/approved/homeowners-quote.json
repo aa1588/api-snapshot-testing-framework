@@ -1,0 +1,220 @@
+{
+  "responseId" : "<MASKED>",
+  "correlationId" : "<MASKED>",
+  "transactionId" : "<MASKED>",
+  "timestamp" : "<MASKED>",
+  "status" : "SUCCESS",
+  "quote" : {
+    "quoteId" : "<MASKED>",
+    "quoteNumber" : "<MASKED>",
+    "createdAt" : "<MASKED>",
+    "expiresAt" : "<MASKED>",
+    "status" : "QUOTED",
+    "effectiveDate" : "2025-07-01",
+    "expirationDate" : "2026-07-01",
+    "termMonths" : 12,
+    "customer" : {
+      "customerId" : "<MASKED>",
+      "createdAt" : "<MASKED>",
+      "firstName" : "John",
+      "lastName" : "Smith",
+      "email" : "john.smith@example.com",
+      "phone" : "512-555-1234",
+      "dateOfBirth" : "1985-06-15",
+      "mailingAddress" : {
+        "street" : "123 Mailing St",
+        "city" : "Austin",
+        "state" : "TX",
+        "zipCode" : "78701",
+        "county" : "Travis",
+        "latitude" : 30.2672,
+        "longitude" : -97.7431
+      },
+      "creditInfo" : {
+        "creditTier" : "PREFERRED",
+        "creditScoreRange" : 750,
+        "lastChecked" : "<MASKED>"
+      }
+    },
+    "property" : {
+      "propertyId" : "<MASKED>",
+      "createdAt" : "<MASKED>",
+      "propertyType" : "SINGLE_FAMILY",
+      "yearBuilt" : 2015,
+      "squareFootage" : 2500,
+      "constructionType" : "FRAME",
+      "roofType" : "COMPOSITION_SHINGLE",
+      "roofAge" : 11,
+      "numberOfStories" : 2,
+      "hasPool" : false,
+      "hasAlarmSystem" : true,
+      "fireProtectionClass" : "CLASS_4",
+      "distanceToFireStation" : 2.5,
+      "distanceToHydrant" : 0.3,
+      "address" : {
+        "street" : "123 Main Street",
+        "city" : "Austin",
+        "state" : "TX",
+        "zipCode" : "78701",
+        "county" : "Travis",
+        "latitude" : 30.2672,
+        "longitude" : -97.7431
+      },
+      "valuation" : {
+        "valuationId" : "<MASKED>",
+        "valuationDate" : "<MASKED>",
+        "dwellingValue" : 375000,
+        "landValue" : 50000,
+        "totalValue" : 425000,
+        "valuationSource" : "AUTOMATED_VALUATION_MODEL"
+      }
+    },
+    "coverages" : [ {
+      "coverageId" : "<MASKED>",
+      "coverageCode" : "DWELLING",
+      "coverageName" : "Dwelling Coverage",
+      "coverageDescription" : "Covers the structure of your home",
+      "limitAmount" : 350000,
+      "deductible" : 2500,
+      "premium" : 1025.0,
+      "isRequired" : true,
+      "subCoverages" : [ {
+        "subCoverageId" : "<MASKED>",
+        "code" : "DWELLING_EXT",
+        "name" : "Extended Dwelling",
+        "limitAmount" : 35000.0,
+        "premium" : 102.5
+      }, {
+        "subCoverageId" : "<MASKED>",
+        "code" : "BUILDING_CODE",
+        "name" : "Building Code Upgrade",
+        "limitAmount" : 17500.0,
+        "premium" : 51.25
+      } ]
+    }, {
+      "coverageId" : "<MASKED>",
+      "coverageCode" : "OTHER_STRUCTURES",
+      "coverageName" : "Other Structures",
+      "coverageDescription" : "Covers detached structures like garages and fences",
+      "limitAmount" : 35000,
+      "deductible" : 2500,
+      "premium" : 80.0,
+      "isRequired" : false,
+      "subCoverages" : [ ]
+    }, {
+      "coverageId" : "<MASKED>",
+      "coverageCode" : "PERSONAL_PROPERTY",
+      "coverageName" : "Personal Property",
+      "coverageDescription" : "Covers your belongings inside the home",
+      "limitAmount" : 175000,
+      "deductible" : 2500,
+      "premium" : 500.0,
+      "isRequired" : false,
+      "subCoverages" : [ ]
+    }, {
+      "coverageId" : "<MASKED>",
+      "coverageCode" : "LOSS_OF_USE",
+      "coverageName" : "Loss of Use",
+      "coverageDescription" : "Covers additional living expenses if home is uninhabitable",
+      "limitAmount" : 70000,
+      "deductible" : 0,
+      "premium" : 210.0,
+      "isRequired" : false,
+      "subCoverages" : [ ]
+    }, {
+      "coverageId" : "<MASKED>",
+      "coverageCode" : "LIABILITY",
+      "coverageName" : "Personal Liability",
+      "coverageDescription" : "Covers legal liability for injuries to others",
+      "limitAmount" : 300000,
+      "deductible" : 0,
+      "premium" : 900.0,
+      "isRequired" : true,
+      "subCoverages" : [ ]
+    }, {
+      "coverageId" : "<MASKED>",
+      "coverageCode" : "MEDICAL",
+      "coverageName" : "Medical Payments",
+      "coverageDescription" : "Covers medical expenses for guests injured on property",
+      "limitAmount" : 5000,
+      "deductible" : 0,
+      "premium" : 15.0,
+      "isRequired" : false,
+      "subCoverages" : [ ]
+    } ],
+    "discounts" : [ {
+      "discountId" : "<MASKED>",
+      "appliedAt" : "<MASKED>",
+      "discountCode" : "ALARM",
+      "discountName" : "Alarm System Discount",
+      "discountType" : "SAFETY",
+      "discountPercent" : 5,
+      "discountAmount" : 75,
+      "reason" : "Home has monitored alarm system"
+    }, {
+      "discountId" : "<MASKED>",
+      "appliedAt" : "<MASKED>",
+      "discountCode" : "MULTI_POLICY",
+      "discountName" : "Multi-Policy Discount",
+      "discountType" : "BUNDLING",
+      "discountPercent" : 15,
+      "discountAmount" : 225,
+      "reason" : "Customer has auto policy"
+    } ],
+    "pricing" : {
+      "basePremium" : 2730.0,
+      "totalDiscounts" : 300,
+      "surcharges" : 25,
+      "fees" : 35,
+      "totalPremium" : 2490.0,
+      "monthlyPayment" : 207.5,
+      "paymentFrequency" : "MONTHLY",
+      "breakdown" : [ {
+        "category" : "COVERAGE",
+        "description" : "Dwelling Coverage",
+        "amount" : 1025.0
+      }, {
+        "category" : "COVERAGE",
+        "description" : "Other Structures",
+        "amount" : 80.0
+      }, {
+        "category" : "COVERAGE",
+        "description" : "Personal Property",
+        "amount" : 500.0
+      }, {
+        "category" : "COVERAGE",
+        "description" : "Loss of Use",
+        "amount" : 210.0
+      }, {
+        "category" : "COVERAGE",
+        "description" : "Personal Liability",
+        "amount" : 900.0
+      }, {
+        "category" : "COVERAGE",
+        "description" : "Medical Payments",
+        "amount" : 15.0
+      }, {
+        "category" : "DISCOUNT",
+        "description" : "Alarm System Discount",
+        "amount" : -75
+      }, {
+        "category" : "DISCOUNT",
+        "description" : "Multi-Policy Discount",
+        "amount" : -225
+      }, {
+        "category" : "SURCHARGE",
+        "description" : "Hurricane Surcharge",
+        "amount" : 25
+      }, {
+        "category" : "FEE",
+        "description" : "Policy Fee",
+        "amount" : 35
+      } ]
+    }
+  },
+  "messages" : [ {
+    "code" : "INFO_001",
+    "severity" : "INFO",
+    "text" : "Quote created successfully"
+  } ]
+}

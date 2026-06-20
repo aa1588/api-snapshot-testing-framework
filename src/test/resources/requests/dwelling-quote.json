@@ -1,0 +1,107 @@
+{
+  "dtoApplication": {
+    "DTOBasicPolicy": [
+      {
+        "TypeCd": "Dwelling",
+        "PolicyTypeCd": "HO3",
+        "EffDt": "2025-07-01",
+        "TermCd": "Annual",
+        "BillTypeCd": "Direct",
+        "PaymentPlanCd": "Annual"
+      }
+    ],
+    "DTOInsured": [
+      {
+        "InsuredTypeCd": "Primary",
+        "EntityTypeCd": "Individual",
+        "GivenName": "John",
+        "Surname": "Smith",
+        "BirthDt": "1985-06-15",
+        "Addr": [
+          {
+            "AddrTypeCd": "Mailing",
+            "Addr1": "123 Main Street",
+            "City": "Austin",
+            "StateProvCd": "TX",
+            "PostalCode": "78701",
+            "CountryCd": "USA"
+          }
+        ],
+        "Communications": [
+          {
+            "CommTypeCd": "Phone",
+            "CommNumber": "512-555-1234"
+          },
+          {
+            "CommTypeCd": "Email",
+            "CommAddr": "john.smith@example.com"
+          }
+        ]
+      }
+    ],
+    "DTOLine": [
+      {
+        "LineCd": "Dwelling",
+        "DTORisk": [
+          {
+            "RiskTypeCd": "DwellingRisk",
+            "Addr": [
+              {
+                "AddrTypeCd": "Risk",
+                "Addr1": "123 Main Street",
+                "City": "Austin",
+                "StateProvCd": "TX",
+                "PostalCode": "78701",
+                "CountryCd": "USA"
+              }
+            ],
+            "DTOBuilding": [
+              {
+                "BuildingTypeCd": "SingleFamily",
+                "YearBuilt": 2015,
+                "SquareFootage": 2500,
+                "ConstructionCd": "Frame",
+                "RoofTypeCd": "CompositionShingle",
+                "NumberOfStories": 2,
+                "OccupancyCd": "OwnerOccupied",
+                "ProtectionClassCd": "4",
+                "DTOCoverage": [
+                  {
+                    "CoverageCd": "DWELL",
+                    "LimitAmt": 350000,
+                    "DeductibleAmt": 2500
+                  },
+                  {
+                    "CoverageCd": "OTHSTR",
+                    "LimitAmt": 35000,
+                    "DeductibleAmt": 2500
+                  },
+                  {
+                    "CoverageCd": "PERSP",
+                    "LimitAmt": 175000,
+                    "DeductibleAmt": 2500
+                  },
+                  {
+                    "CoverageCd": "LOSSUSE",
+                    "LimitAmt": 70000,
+                    "DeductibleAmt": 0
+                  },
+                  {
+                    "CoverageCd": "PERLIAB",
+                    "LimitAmt": 300000,
+                    "DeductibleAmt": 0
+                  },
+                  {
+                    "CoverageCd": "MEDPAY",
+                    "LimitAmt": 5000,
+                    "DeductibleAmt": 0
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

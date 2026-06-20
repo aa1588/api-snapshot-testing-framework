@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- Clean console output for tests - message only, no timestamps -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Our snapshot test logs - show these -->
+    <logger name="com.aiig.demo_app.ApiSnapshotTest" level="INFO" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+
+    <!-- Silence everything else -->
+    <root level="OFF">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+</configuration>

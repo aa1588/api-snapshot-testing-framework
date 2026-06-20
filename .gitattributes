@@ -1,0 +1,11 @@
+/mvnw text eol=lf
+*.cmd text eol=crlf
+
+# Snapshot Testing
+# Ensure consistent line endings for JSON snapshots across platforms
+# This prevents false diffs due to CRLF vs LF differences
+*.json text eol=lf
+
+# YAML configuration files
+*.yml text eol=lf
+*.yaml text eol=lf

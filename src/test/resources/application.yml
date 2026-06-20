@@ -1,0 +1,14 @@
+spring:
+  main:
+    banner-mode: off
+    log-startup-info: false
+
+  security:
+    user:
+      name: test-user
+      password: test-secret
+
+logging:
+  level:
+    root: OFF
+    com.aiig.demo_app.ApiSnapshotTest: INFO

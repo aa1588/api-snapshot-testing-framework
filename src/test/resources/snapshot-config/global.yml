@@ -1,0 +1,48 @@
+# Global Snapshot Testing Configuration
+# =====================================
+# These masking rules apply to ALL endpoints.
+# Use this for common dynamic fields that appear in every API response.
+#
+# DO NOT add endpoint-specific fields here. Instead, create a file
+# in the endpoints/ directory for each endpoint.
+
+masking:
+  paths:
+    # Standard response envelope fields
+    - $.responseId
+    - $.correlationId
+    - $.transactionId
+    - $.timestamp
+
+    # Common timestamps that appear in many responses
+    - $..createdAt
+    - $..updatedAt
+    - $..modifiedAt
+
+    # INOW common timestamp fields (recursive - matches at any depth)
+    - $..AddDt
+    - $..AddTm
+    - $..UpdateDt
+    - $..UpdateTm
+    - $..EffDt
+    - $..ExpDt
+
+    # INOW common dynamic identifiers (recursive)
+    - $..id
+    - $..SystemId
+    - $..DataReportRef
+
+    # INOW common number/reference fields (recursive)
+    - $..AppNumber
+    - $..QuoteNumber
+    - $..PolicyNumber
+    - $..TransactionNumber
+    - $..VersionNumber
+    - $..LineNumber
+    - $..RiskNumber
+    - $..BuildingNumber
+    - $..LocationNumber
+    - $..CoverageNumber
+    - $..InsuredNumber
+    - $..PartyNumber
+    - $..AddrNumber

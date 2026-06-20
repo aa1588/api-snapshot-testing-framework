@@ -1,0 +1,58 @@
+{
+  "customer": {
+    "firstName": "John",
+    "lastName": "Smith",
+    "email": "john.smith@example.com",
+    "phone": "512-555-1234",
+    "dateOfBirth": "1985-06-15"
+  },
+  "property": {
+    "address": {
+      "street": "123 Main Street",
+      "city": "Austin",
+      "state": "TX",
+      "zipCode": "78701"
+    },
+    "propertyType": "SINGLE_FAMILY",
+    "yearBuilt": 2015,
+    "squareFootage": 2500,
+    "constructionType": "FRAME",
+    "roofType": "COMPOSITION_SHINGLE",
+    "numberOfStories": 2,
+    "hasPool": false,
+    "hasAlarmSystem": true
+  },
+  "requestedCoverages": [
+    {
+      "coverageCode": "DWELLING",
+      "limitAmount": 350000,
+      "deductible": 2500
+    },
+    {
+      "coverageCode": "OTHER_STRUCTURES",
+      "limitAmount": 35000,
+      "deductible": 2500
+    },
+    {
+      "coverageCode": "PERSONAL_PROPERTY",
+      "limitAmount": 175000,
+      "deductible": 2500
+    },
+    {
+      "coverageCode": "LOSS_OF_USE",
+      "limitAmount": 70000,
+      "deductible": 0
+    },
+    {
+      "coverageCode": "LIABILITY",
+      "limitAmount": 300000,
+      "deductible": 0
+    },
+    {
+      "coverageCode": "MEDICAL",
+      "limitAmount": 5000,
+      "deductible": 0
+    }
+  ],
+  "effectiveDate": "2025-07-01"
+}

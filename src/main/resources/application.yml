@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: inow-integration-demo
+
+  jackson:
+    default-property-inclusion: non_null
+
+  security:
+    user:
+      name: api-user
+      password: api-secret
+
+server:
+  port: 8080
