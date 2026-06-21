@@ -433,7 +433,28 @@ masking:
 | `mvn test` | Run all tests, verify snapshots match |
 | `mvn test -Dtest=ApiSnapshotTest` | Run only snapshot tests |
 | `mvn test -Dsnapshot.update=true` | Approve new/changed snapshots |
-| `mvn test -Dtest=ApiSnapshotTest#verifyEndpointSnapshot[homeowners-quote]` | Run single endpoint test |
+| `mvn test -Dsnapshot.endpoint=<key>` | Run single endpoint test |
+| `mvn test -Dsnapshot.endpoint=<key> -Dsnapshot.update=true` | Snapshot single endpoint |
+
+### Single Endpoint Testing
+
+You can run or snapshot a single endpoint using the `-Dsnapshot.endpoint` flag:
+
+```bash
+# Test only homeowners-quote
+mvn test -Dsnapshot.endpoint=homeowners-quote
+
+# Test only dwelling-quote
+mvn test -Dsnapshot.endpoint=dwelling-quote
+
+# Snapshot only one endpoint
+mvn test -Dsnapshot.endpoint=dwelling-quote -Dsnapshot.update=true
+```
+
+This is useful when:
+- Adding a new endpoint (snapshot just that one)
+- Debugging a single failing test
+- Speeding up development iteration
 
 ### CI/CD Integration
 

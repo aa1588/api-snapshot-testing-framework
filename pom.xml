@@ -97,9 +97,10 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
-					<!-- Allow approval mode via system property -->
+					<!-- Allow approval mode and endpoint filter via system property -->
 					<systemPropertyVariables>
 						<snapshot.update>${snapshot.update}</snapshot.update>
+						<snapshot.endpoint>${snapshot.endpoint}</snapshot.endpoint>
 					</systemPropertyVariables>
 					<!-- Allure configuration -->
 					<argLine>

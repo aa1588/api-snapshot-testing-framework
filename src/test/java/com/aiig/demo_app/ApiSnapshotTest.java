@@ -84,6 +84,14 @@ class ApiSnapshotTest {
     @DisplayName("Snapshot verification")
     @Severity(SeverityLevel.CRITICAL)
     void verifyEndpointSnapshot(EndpointConfig endpoint) throws Exception {
+        // Filter by endpoint key if specified via -Dsnapshot.endpoint=<key>
+        String filterEndpoint = System.getProperty("snapshot.endpoint");
+        if (filterEndpoint != null && !filterEndpoint.isEmpty()
+                && !filterEndpoint.equals(endpoint.key())) {
+            log.info("Skipping endpoint: {} (filter: {})", endpoint.key(), filterEndpoint);
+            return; // Skip this endpoint
+        }
+
         // Set Allure metadata dynamically
         Allure.epic("API Regression Testing");
         Allure.feature(endpoint.key());
