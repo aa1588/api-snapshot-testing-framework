@@ -245,7 +245,7 @@ public class SnapshotComparator {
             appendDifferenceGroup(sb, "REMOVED FIELDS", byType.get(DifferenceType.REMOVED));
             appendDifferenceGroup(sb, "ADDED FIELDS", byType.get(DifferenceType.ADDED));
             appendDifferenceGroup(sb, "TYPE CHANGES", byType.get(DifferenceType.TYPE_CHANGED));
-            appendDifferenceGroup(sb, "VALUE CHANGES", byType.get(DifferenceType.VALUE_CHANGED));
+            appendDifferenceGroup(sb, "MISMATCHES", byType.get(DifferenceType.VALUE_CHANGED));
 
             sb.append("\n--- JSONAssert Summary ---\n");
             sb.append(summary);
@@ -263,10 +263,10 @@ public class SnapshotComparator {
             for (Difference diff : diffs) {
                 sb.append("  ").append(diff.path()).append("\n");
                 if (diff.expected() != null) {
-                    sb.append("    Expected: ").append(truncate(diff.expected(), 100)).append("\n");
+                    sb.append("    Baseline: ").append(truncate(diff.expected(), 100)).append("\n");
                 }
                 if (diff.actual() != null) {
-                    sb.append("    Actual:   ").append(truncate(diff.actual(), 100)).append("\n");
+                    sb.append("    Current:  ").append(truncate(diff.actual(), 100)).append("\n");
                 }
             }
             sb.append("\n");

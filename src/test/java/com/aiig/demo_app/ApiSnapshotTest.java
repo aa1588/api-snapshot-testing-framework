@@ -159,8 +159,10 @@ class ApiSnapshotTest {
 
         if (snapshotManager.isUpdateMode()) {
             log.info("      Mode: UPDATE (approved snapshot will be overwritten)");
+            snapshotManager.saveRaw(endpoint.key(), actualResponse);
             snapshotManager.approve(endpoint.key());
-            log.info("      ✓ Approved snapshot saved to: {}", snapshotManager.getApprovedPath(endpoint.key()));
+            log.info("      ✓ Raw snapshot saved to: {}", snapshotManager.getRawPath(endpoint.key()));
+            log.info("      ✓ Masked snapshot saved to: {}", snapshotManager.getApprovedPath(endpoint.key()));
             Allure.step("Snapshot UPDATED (baseline captured)");
             logSuccess(endpoint);
             return;
@@ -168,8 +170,10 @@ class ApiSnapshotTest {
 
         if (!snapshotManager.hasApprovedSnapshot(endpoint.key())) {
             log.info("      No approved snapshot exists - creating initial baseline");
+            snapshotManager.saveRaw(endpoint.key(), actualResponse);
             snapshotManager.approve(endpoint.key());
-            log.info("      ✓ Initial snapshot saved to: {}", snapshotManager.getApprovedPath(endpoint.key()));
+            log.info("      ✓ Raw snapshot saved to: {}", snapshotManager.getRawPath(endpoint.key()));
+            log.info("      ✓ Masked snapshot saved to: {}", snapshotManager.getApprovedPath(endpoint.key()));
             Allure.step("Initial snapshot CREATED");
             logSuccess(endpoint);
             return;
