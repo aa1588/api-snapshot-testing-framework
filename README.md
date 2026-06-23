@@ -9,7 +9,18 @@ Captures JSON API responses as baselines and compares future responses against t
 | `mvn test -Dsnapshot.update=true` | Create/update baseline snapshots |
 | `mvn test` | Verify responses match baselines |
 | `mvn test -Dsnapshot.endpoint=<key>` | Test single endpoint |
-| `mvn allure:serve` | View HTML test report |
+| `mvn allure:serve` | View HTML test report (live server) |
+| `mvn allure:report` | Generate static HTML report |
+
+**Export report for archiving:**
+```bash
+mvn allure:report
+# Report saved to: target/site/allure-maven-plugin/
+
+# View static report (browser security requires local server)
+cd target/site/allure-maven-plugin && python3 -m http.server 8000
+# Open http://localhost:8000
+```
 
 ## Add New Endpoint
 
