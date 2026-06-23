@@ -190,6 +190,21 @@ mvn test
 6. ✓ PASSED
 ```
 
+## How to Work as a Dev
+
+After code changes:
+
+```bash
+# Test all endpoints
+mvn test
+
+# Test a specific endpoint
+mvn test -Dsnapshot.endpoint=order
+
+# Test passed → safe to commit
+# Test failed → check diff, fix code or update baseline if intentional
+```
+
 ## Sample Request
 
 ```bash
