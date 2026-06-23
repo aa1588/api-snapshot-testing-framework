@@ -192,7 +192,18 @@ mvn test
 
 ## How to Work as a Dev
 
-After code changes:
+**One-time setup (per endpoint):**
+
+1. Collect request bodies → `requests/*.json`
+2. Configure endpoints → `snapshot-config/endpoints/*.yml`
+3. Run tests (empty masking) → `mvn test -Dsnapshot.update=true`
+4. Discover dynamic fields → `mvn test` (fails, shows mismatches)
+5. Add masking paths → update `*.yml` files
+6. Re-capture baselines → `mvn test -Dsnapshot.update=true`
+7. Verify all pass → `mvn test`
+8. Commit everything → `git add & commit`
+
+**After code changes:**
 
 ```bash
 # Test all endpoints
