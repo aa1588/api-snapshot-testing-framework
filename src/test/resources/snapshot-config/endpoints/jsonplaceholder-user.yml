@@ -1,0 +1,10 @@
+# JSONPlaceholder - Free fake API for testing
+# https://jsonplaceholder.typicode.com
+
+endpoint:
+  key: jsonplaceholder-user
+  method: GET
+  url: /users/1
+
+masking:
+  paths: []
