@@ -30,6 +30,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Parameterized snapshot tests for all API endpoints using REAL HTTP calls.
+ *
+ * Supports two environments:
+ * - Baseline: Used when capturing snapshots (-Dsnapshot.update=true)
+ * - Current: Used when verifying against baselines
+ *
+ * Configure environments in application.yml:
+ *   snapshot.environments.baseline.url
+ *   snapshot.environments.current.url
  */
 @SpringBootTest(
     classes = DemoAppApplication.class,
@@ -45,13 +53,28 @@ class ApiSnapshotTest {
     @LocalServerPort
     private int port;
 
-    @Value("${spring.security.user.name}")
-    private String username;
+    // Baseline environment (for capturing snapshots)
+    @Value("${snapshot.environments.baseline.url:#{null}}")
+    private String baselineUrl;
 
-    @Value("${spring.security.user.password}")
-    private String password;
+    @Value("${snapshot.environments.baseline.username:${spring.security.user.name}}")
+    private String baselineUsername;
 
-    private RestClient restClient;
+    @Value("${snapshot.environments.baseline.password:${spring.security.user.password}}")
+    private String baselinePassword;
+
+    // Current environment (for verification)
+    @Value("${snapshot.environments.current.url:#{null}}")
+    private String currentUrl;
+
+    @Value("${snapshot.environments.current.username:${spring.security.user.name}}")
+    private String currentUsername;
+
+    @Value("${snapshot.environments.current.password:${spring.security.user.password}}")
+    private String currentPassword;
+
+    private RestClient baselineClient;
+    private RestClient currentClient;
     private SnapshotManager snapshotManager;
     private SnapshotComparator comparator;
     private SnapshotConfig config;
@@ -59,15 +82,14 @@ class ApiSnapshotTest {
 
     @BeforeEach
     void setUp() {
-        // Create Basic Auth header
-        String credentials = username + ":" + password;
-        String encodedCredentials = Base64.getEncoder()
-            .encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
+        // Resolve URLs - use localhost if not configured
+        String resolvedBaselineUrl = resolveUrl(baselineUrl);
+        String resolvedCurrentUrl = resolveUrl(currentUrl);
 
-        restClient = RestClient.builder()
-            .baseUrl("http://localhost:" + port)
-            .defaultHeader(HttpHeaders.AUTHORIZATION, "Basic " + encodedCredentials)
-            .build();
+        // Create clients for each environment
+        baselineClient = createRestClient(resolvedBaselineUrl, baselineUsername, baselinePassword);
+        currentClient = createRestClient(resolvedCurrentUrl, currentUsername, currentPassword);
+
         snapshotManager = new SnapshotManager();
         objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
@@ -75,8 +97,27 @@ class ApiSnapshotTest {
         config = new SnapshotConfig();
 
         log.info("========================================");
-        log.info("Test server running on port: {}", port);
+        log.info("Baseline environment: {}", resolvedBaselineUrl);
+        log.info("Current environment:  {}", resolvedCurrentUrl);
         log.info("========================================");
+    }
+
+    private String resolveUrl(String url) {
+        if (url == null || url.contains("${local.server.port}")) {
+            return "http://localhost:" + port;
+        }
+        return url;
+    }
+
+    private RestClient createRestClient(String baseUrl, String username, String password) {
+        String credentials = username + ":" + password;
+        String encodedCredentials = Base64.getEncoder()
+            .encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
+
+        return RestClient.builder()
+            .baseUrl(baseUrl)
+            .defaultHeader(HttpHeaders.AUTHORIZATION, "Basic " + encodedCredentials)
+            .build();
     }
 
     @ParameterizedTest(name = "{0}")
@@ -116,12 +157,19 @@ class ApiSnapshotTest {
             log.info("[1/6] No request body required for {} method", endpoint.method());
         }
 
-        // 2. Make real HTTP call
+        // 2. Choose client based on mode
+        boolean isUpdateMode = snapshotManager.isUpdateMode();
+        boolean noBaselineExists = !snapshotManager.hasApprovedSnapshot(endpoint.key());
+
+        // Use baseline client when capturing, current client when verifying
+        RestClient activeClient = (isUpdateMode || noBaselineExists) ? baselineClient : currentClient;
+        String envName = (isUpdateMode || noBaselineExists) ? "BASELINE" : "CURRENT";
+
         String url = endpoint.url();
-        log.info("[2/6] Making HTTP request: {} http://localhost:{}{}", endpoint.method(), port, url);
+        log.info("[2/6] Making HTTP request to {} environment: {} {}", envName, endpoint.method(), url);
 
         long startTime = System.currentTimeMillis();
-        String actualResponse = restClient.method(HttpMethod.valueOf(endpoint.method()))
+        String actualResponse = activeClient.method(HttpMethod.valueOf(endpoint.method()))
             .uri(url)
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
@@ -133,7 +181,7 @@ class ApiSnapshotTest {
         assertNotNull(actualResponse, "Response body should not be null");
         log.info("      Response received: {} characters in {} ms", actualResponse.length(), duration);
 
-        Allure.step("HTTP " + endpoint.method() + " " + endpoint.url() + " (" + duration + "ms)");
+        Allure.step("HTTP " + endpoint.method() + " " + endpoint.url() + " [" + envName + "] (" + duration + "ms)");
 
         // 3. Load masking configuration
         log.info("[3/6] Loading masking configuration...");
@@ -157,8 +205,8 @@ class ApiSnapshotTest {
         // 6. Compare or approve
         log.info("[6/6] Checking snapshot status...");
 
-        if (snapshotManager.isUpdateMode()) {
-            log.info("      Mode: UPDATE (approved snapshot will be overwritten)");
+        if (isUpdateMode) {
+            log.info("      Mode: UPDATE (capturing from BASELINE environment)");
             snapshotManager.saveRaw(endpoint.key(), actualResponse);
             snapshotManager.approve(endpoint.key());
             log.info("      ✓ Raw snapshot saved to: {}", snapshotManager.getRawPath(endpoint.key()));
@@ -168,7 +216,7 @@ class ApiSnapshotTest {
             return;
         }
 
-        if (!snapshotManager.hasApprovedSnapshot(endpoint.key())) {
+        if (noBaselineExists) {
             log.info("      No approved snapshot exists - creating initial baseline");
             snapshotManager.saveRaw(endpoint.key(), actualResponse);
             snapshotManager.approve(endpoint.key());
@@ -179,7 +227,7 @@ class ApiSnapshotTest {
             return;
         }
 
-        log.info("      Mode: VERIFY (comparing against approved snapshot)");
+        log.info("      Mode: VERIFY (comparing CURRENT against BASELINE snapshot)");
         log.info("      Approved snapshot: {}", snapshotManager.getApprovedPath(endpoint.key()));
 
         String approvedResponse = snapshotManager.loadApproved(endpoint.key());

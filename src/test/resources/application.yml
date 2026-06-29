@@ -12,3 +12,17 @@ logging:
   level:
     root: OFF
     com.aiig.demo_app.ApiSnapshotTest: INFO
+
+# Snapshot testing environment configuration
+snapshot:
+  environments:
+    # Baseline environment (old system - used when capturing snapshots)
+    baseline:
+      url: http://localhost:${local.server.port}
+      username: test-user
+      password: test-secret
+    # Current environment (new system - used when verifying)
+    current:
+      url: http://localhost:${local.server.port}
+      username: test-user
+      password: test-secret
