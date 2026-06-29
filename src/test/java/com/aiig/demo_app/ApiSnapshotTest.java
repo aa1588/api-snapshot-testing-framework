@@ -225,8 +225,8 @@ class ApiSnapshotTest {
         SnapshotComparator.ComparisonResult result = comparator.compare(approvedResponse, maskedResponse);
 
         if (result.matches()) {
-            snapshotManager.deleteReceived(endpoint.key());
             log.info("      ✓ Snapshot matches!");
+            log.info("      Received snapshot: {}", snapshotManager.getReceivedPath(endpoint.key()));
             Allure.step("Snapshot MATCHED");
             logSuccess(endpoint);
         } else {
