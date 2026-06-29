@@ -18,11 +18,11 @@ snapshot:
   environments:
     # Baseline environment (old system - used when capturing snapshots)
     baseline:
-      url: http://localhost:8080
-      username: api-user
-      password: api-secret
+      url: https://jsonplaceholder.typicode.com
+      username:
+      password:
     # Current environment (new system - used when verifying)
     current:
-      url: http://localhost:8080
-      username: api-user
-      password: api-secret
+      url: https://jsonplaceholder.typicode.com
+      username:
+      password:

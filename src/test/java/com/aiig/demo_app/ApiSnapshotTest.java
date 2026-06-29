@@ -103,14 +103,17 @@ class ApiSnapshotTest {
     }
 
     private RestClient createRestClient(String baseUrl, String username, String password) {
-        String credentials = username + ":" + password;
-        String encodedCredentials = Base64.getEncoder()
-            .encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
+        RestClient.Builder builder = RestClient.builder().baseUrl(baseUrl);
 
-        return RestClient.builder()
-            .baseUrl(baseUrl)
-            .defaultHeader(HttpHeaders.AUTHORIZATION, "Basic " + encodedCredentials)
-            .build();
+        // Only add Basic Auth if credentials are provided
+        if (username != null && !username.isBlank() && password != null && !password.isBlank()) {
+            String credentials = username + ":" + password;
+            String encodedCredentials = Base64.getEncoder()
+                .encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
+            builder.defaultHeader(HttpHeaders.AUTHORIZATION, "Basic " + encodedCredentials);
+        }
+
+        return builder.build();
     }
 
     @ParameterizedTest(name = "{0}")
@@ -155,26 +158,42 @@ class ApiSnapshotTest {
         boolean noBaselineExists = !snapshotManager.hasApprovedSnapshot(endpoint.key());
 
         // Use baseline client when capturing, current client when verifying
-        RestClient activeClient = (isUpdateMode || noBaselineExists) ? baselineClient : currentClient;
-        String envName = (isUpdateMode || noBaselineExists) ? "BASELINE" : "CURRENT";
+        RestClient activeClient;
+        String envName;
+        String baseUrl;
+        if (isUpdateMode || noBaselineExists) {
+            activeClient = baselineClient;
+            envName = "BASELINE";
+            baseUrl = resolveUrl(baselineUrl);
+        } else {
+            activeClient = currentClient;
+            envName = "CURRENT";
+            baseUrl = resolveUrl(currentUrl);
+        }
 
         String url = endpoint.url();
-        log.info("[2/6] Making HTTP request to {} environment: {} {}", envName, endpoint.method(), url);
+        String fullUrl = baseUrl + url;
+        log.info("[2/6] Making HTTP request to {} environment:", envName);
+        log.info("      {} {}", endpoint.method(), fullUrl);
 
         long startTime = System.currentTimeMillis();
-        String actualResponse = activeClient.method(HttpMethod.valueOf(endpoint.method()))
+        RestClient.RequestBodySpec requestSpec = activeClient.method(HttpMethod.valueOf(endpoint.method()))
             .uri(url)
             .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON)
-            .body(requestBody)
-            .retrieve()
-            .body(String.class);
+            .accept(MediaType.APPLICATION_JSON);
+
+        String actualResponse;
+        if (requestBody != null) {
+            actualResponse = requestSpec.body(requestBody).retrieve().body(String.class);
+        } else {
+            actualResponse = requestSpec.retrieve().body(String.class);
+        }
         long duration = System.currentTimeMillis() - startTime;
 
         assertNotNull(actualResponse, "Response body should not be null");
         log.info("      Response received: {} characters in {} ms", actualResponse.length(), duration);
 
-        Allure.step("HTTP " + endpoint.method() + " " + endpoint.url() + " [" + envName + "] (" + duration + "ms)");
+        Allure.step("HTTP " + endpoint.method() + " " + fullUrl + " [" + envName + "] (" + duration + "ms)");
 
         // 3. Load masking configuration
         log.info("[3/6] Loading masking configuration...");
