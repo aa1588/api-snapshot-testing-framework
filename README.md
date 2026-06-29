@@ -41,11 +41,30 @@ masking:
     - $..createdAt          # recursive (any depth)
 ```
 
-**2. Create request payload** `src/test/resources/requests/{key}.json`
+**2. Create request payload** `src/test/resources/requests/{key}.json` (only for POST/PUT/PATCH)
 
 **3. Capture baseline:**
 ```bash
 mvn test -Dsnapshot.update=true
+```
+
+### Supported Methods
+
+| Method | requestFile | masking |
+|--------|-------------|---------|
+| GET | Not needed | Optional |
+| DELETE | Not needed | Optional |
+| POST | Required | Optional |
+| PUT | Required | Optional |
+| PATCH | Required | Optional |
+
+**GET endpoint example (minimal config):**
+
+```yaml
+endpoint:
+  key: get-order
+  method: GET
+  url: /api/orders/123
 ```
 
 ## Project Structure
