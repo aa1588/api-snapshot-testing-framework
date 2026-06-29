@@ -2,6 +2,8 @@ package com.aiig.demo_app;
 
 import com.aiig.demo_app.snapshot.SnapshotConfig;
 import com.aiig.demo_app.snapshot.SnapshotConfig.EndpointConfig;
+import com.aiig.demo_app.snapshot.SnapshotConfig.EnvironmentConfig;
+import com.aiig.demo_app.snapshot.SnapshotConfig.EnvironmentsConfig;
 import com.aiig.demo_app.snapshot.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -12,8 +14,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.*;
 import org.springframework.web.client.RestClient;
 
@@ -38,7 +38,6 @@ import static org.junit.jupiter.api.Assertions.*;
  *   snapshot.environments.baseline.url
  *   snapshot.environments.current.url
  */
-@SpringBootTest(classes = DemoAppApplication.class)
 @DisplayName("API Snapshot Tests")
 @Epic("API Regression Testing")
 @Feature("Snapshot Verification")
@@ -46,26 +45,8 @@ class ApiSnapshotTest {
 
     private static final Logger log = LoggerFactory.getLogger(ApiSnapshotTest.class);
 
-    // Baseline environment (for capturing snapshots)
-    @Value("${snapshot.environments.baseline.url:#{null}}")
-    private String baselineUrl;
-
-    @Value("${snapshot.environments.baseline.username:${spring.security.user.name}}")
-    private String baselineUsername;
-
-    @Value("${snapshot.environments.baseline.password:${spring.security.user.password}}")
-    private String baselinePassword;
-
-    // Current environment (for verification)
-    @Value("${snapshot.environments.current.url:#{null}}")
-    private String currentUrl;
-
-    @Value("${snapshot.environments.current.username:${spring.security.user.name}}")
-    private String currentUsername;
-
-    @Value("${snapshot.environments.current.password:${spring.security.user.password}}")
-    private String currentPassword;
-
+    private EnvironmentConfig baselineEnv;
+    private EnvironmentConfig currentEnv;
     private RestClient baselineClient;
     private RestClient currentClient;
     private SnapshotManager snapshotManager;
@@ -74,38 +55,34 @@ class ApiSnapshotTest {
     private ObjectMapper objectMapper;
 
     @BeforeEach
-    void setUp() {
-        // Resolve URLs - use localhost if not configured
-        String resolvedBaselineUrl = resolveUrl(baselineUrl);
-        String resolvedCurrentUrl = resolveUrl(currentUrl);
+    void setUp() throws IOException {
+        config = new SnapshotConfig();
+        EnvironmentsConfig envConfig = config.loadEnvironmentsConfig();
+
+        baselineEnv = envConfig.baseline();
+        currentEnv = envConfig.current();
 
         // Create clients for each environment
-        baselineClient = createRestClient(resolvedBaselineUrl, baselineUsername, baselinePassword);
-        currentClient = createRestClient(resolvedCurrentUrl, currentUsername, currentPassword);
+        baselineClient = createRestClient(baselineEnv);
+        currentClient = createRestClient(currentEnv);
 
         snapshotManager = new SnapshotManager();
         objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         comparator = new SnapshotComparator(objectMapper);
-        config = new SnapshotConfig();
 
         log.info("========================================");
-        log.info("Baseline environment: {}", resolvedBaselineUrl);
-        log.info("Current environment:  {}", resolvedCurrentUrl);
+        log.info("Baseline environment: {}", baselineEnv.url());
+        log.info("Current environment:  {}", currentEnv.url());
         log.info("========================================");
     }
 
-    private String resolveUrl(String url) {
-        if (url == null || url.isBlank()) {
-            throw new IllegalStateException("Environment URL must be configured in application.yml");
-        }
-        return url;
-    }
-
-    private RestClient createRestClient(String baseUrl, String username, String password) {
-        RestClient.Builder builder = RestClient.builder().baseUrl(baseUrl);
+    private RestClient createRestClient(EnvironmentConfig env) {
+        RestClient.Builder builder = RestClient.builder().baseUrl(env.url());
 
         // Only add Basic Auth if credentials are provided
+        String username = env.username();
+        String password = env.password();
         if (username != null && !username.isBlank() && password != null && !password.isBlank()) {
             String credentials = username + ":" + password;
             String encodedCredentials = Base64.getEncoder()
@@ -164,11 +141,11 @@ class ApiSnapshotTest {
         if (isUpdateMode || noBaselineExists) {
             activeClient = baselineClient;
             envName = "BASELINE";
-            baseUrl = resolveUrl(baselineUrl);
+            baseUrl = baselineEnv.url();
         } else {
             activeClient = currentClient;
             envName = "CURRENT";
-            baseUrl = resolveUrl(currentUrl);
+            baseUrl = currentEnv.url();
         }
 
         String url = endpoint.url();

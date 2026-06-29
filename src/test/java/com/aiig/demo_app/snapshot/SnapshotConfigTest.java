@@ -26,20 +26,20 @@ class SnapshotConfigTest {
     void shouldLoadEndpointConfig() throws IOException {
         SnapshotConfig config = new SnapshotConfig();
         SnapshotConfig.EndpointConfig endpoint =
-            config.loadEndpointConfig("order");
+            config.loadEndpointConfig("jsonplaceholder-post");
 
         assertNotNull(endpoint);
-        assertEquals("order", endpoint.key());
-        assertEquals("POST", endpoint.method());
-        assertEquals("/api/demo/order", endpoint.url());
-        assertEquals("requests/order.json", endpoint.requestFile());
-        assertTrue(endpoint.hasRequestBody());
+        assertEquals("jsonplaceholder-post", endpoint.key());
+        assertEquals("GET", endpoint.method());
+        assertEquals("/posts/1", endpoint.url());
+        assertNull(endpoint.requestFile());
+        assertFalse(endpoint.hasRequestBody());
     }
 
     @Test
     void shouldCombineGlobalAndEndpointPaths() throws IOException {
         SnapshotConfig config = new SnapshotConfig();
-        List<String> combined = config.getCombinedMaskingPaths("order");
+        List<String> combined = config.getCombinedMaskingPaths("jsonplaceholder-post");
 
         assertNotNull(combined);
         // Combined paths include both global and endpoint-specific
@@ -52,13 +52,13 @@ class SnapshotConfigTest {
 
         assertFalse(endpoints.isEmpty());
 
-        // Find order config
-        SnapshotConfig.EndpointConfig order = endpoints.stream()
-            .filter(e -> "order".equals(e.key()))
+        // Find jsonplaceholder-post config
+        SnapshotConfig.EndpointConfig endpoint = endpoints.stream()
+            .filter(e -> "jsonplaceholder-post".equals(e.key()))
             .findFirst()
-            .orElseThrow(() -> new AssertionError("order config not found"));
+            .orElseThrow(() -> new AssertionError("jsonplaceholder-post config not found"));
 
-        assertEquals("POST", order.method());
+        assertEquals("GET", endpoint.method());
     }
 
     @Test
@@ -72,10 +72,22 @@ class SnapshotConfigTest {
     @Test
     void shouldIdentifyRequestBodyRequirements() throws IOException {
         SnapshotConfig config = new SnapshotConfig();
-        SnapshotConfig.EndpointConfig postEndpoint =
-            config.loadEndpointConfig("order");
+        SnapshotConfig.EndpointConfig getEndpoint =
+            config.loadEndpointConfig("jsonplaceholder-post");
 
-        assertTrue(postEndpoint.hasRequestBody(),
-            "POST endpoints should require request body");
+        assertFalse(getEndpoint.hasRequestBody(),
+            "GET endpoints should not require request body");
+    }
+
+    @Test
+    void shouldLoadEnvironmentsConfig() throws IOException {
+        SnapshotConfig config = new SnapshotConfig();
+        SnapshotConfig.EnvironmentsConfig envConfig = config.loadEnvironmentsConfig();
+
+        assertNotNull(envConfig);
+        assertNotNull(envConfig.baseline());
+        assertNotNull(envConfig.current());
+        assertNotNull(envConfig.baseline().url());
+        assertNotNull(envConfig.current().url());
     }
 }

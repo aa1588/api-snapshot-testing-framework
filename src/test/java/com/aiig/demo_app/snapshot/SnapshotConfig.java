@@ -49,6 +49,7 @@ import java.util.*;
 public class SnapshotConfig {
 
     private static final String CONFIG_BASE = "src/test/resources/snapshot-config";
+    private static final String APPLICATION_YML = "src/test/resources/application.yml";
     private static final String GLOBAL_CONFIG = "global.yml";
     private static final String ENDPOINTS_DIR = "endpoints";
 
@@ -58,6 +59,7 @@ public class SnapshotConfig {
     // Cached configurations
     private GlobalConfig globalConfig;
     private Map<String, EndpointConfig> endpointConfigs;
+    private EnvironmentsConfig environmentsConfig;
 
     public SnapshotConfig() {
         this(Paths.get(CONFIG_BASE));
@@ -67,6 +69,58 @@ public class SnapshotConfig {
         this.configBasePath = configBasePath;
         this.yaml = new Yaml();
         this.endpointConfigs = new HashMap<>();
+    }
+
+    /**
+     * Loads environment configuration from application.yml.
+     */
+    @SuppressWarnings("unchecked")
+    public EnvironmentsConfig loadEnvironmentsConfig() throws IOException {
+        if (environmentsConfig != null) {
+            return environmentsConfig;
+        }
+
+        Path appYmlPath = Paths.get(APPLICATION_YML);
+        if (!Files.exists(appYmlPath)) {
+            throw new IllegalStateException("application.yml not found at: " + appYmlPath);
+        }
+
+        try (InputStream is = Files.newInputStream(appYmlPath)) {
+            Map<String, Object> data = yaml.load(is);
+            Map<String, Object> snapshot = (Map<String, Object>) data.get("snapshot");
+            if (snapshot == null) {
+                throw new IllegalStateException("Missing 'snapshot' section in application.yml");
+            }
+
+            Map<String, Object> environments = (Map<String, Object>) snapshot.get("environments");
+            if (environments == null) {
+                throw new IllegalStateException("Missing 'snapshot.environments' section in application.yml");
+            }
+
+            EnvironmentConfig baseline = parseEnvironmentConfig(
+                (Map<String, Object>) environments.get("baseline"), "baseline");
+            EnvironmentConfig current = parseEnvironmentConfig(
+                (Map<String, Object>) environments.get("current"), "current");
+
+            environmentsConfig = new EnvironmentsConfig(baseline, current);
+            return environmentsConfig;
+        }
+    }
+
+    private EnvironmentConfig parseEnvironmentConfig(Map<String, Object> data, String name) {
+        if (data == null) {
+            throw new IllegalStateException("Missing '" + name + "' environment config");
+        }
+
+        String url = (String) data.get("url");
+        if (url == null || url.isBlank()) {
+            throw new IllegalStateException("Missing 'url' in " + name + " environment config");
+        }
+
+        String username = data.get("username") != null ? data.get("username").toString() : null;
+        String password = data.get("password") != null ? data.get("password").toString() : null;
+
+        return new EnvironmentConfig(url, username, password);
     }
 
     /**
@@ -227,4 +281,21 @@ public class SnapshotConfig {
                    "PATCH".equalsIgnoreCase(method);
         }
     }
+
+    /**
+     * Environment configurations for baseline and current.
+     */
+    public record EnvironmentsConfig(
+        EnvironmentConfig baseline,
+        EnvironmentConfig current
+    ) {}
+
+    /**
+     * Single environment configuration.
+     */
+    public record EnvironmentConfig(
+        String url,
+        String username,
+        String password
+    ) {}
 }
