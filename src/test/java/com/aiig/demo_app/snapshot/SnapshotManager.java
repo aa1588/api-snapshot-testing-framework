@@ -20,7 +20,8 @@ import java.nio.file.Paths;
  *   │   ├── {endpoint-key}.json       <- Masked response (used for comparison)
  *   │   └── {endpoint-key}.raw.json   <- Original unmasked response (for records)
  *   └── received/           <- Git-ignored (transient comparison files)
- *       └── {endpoint-key}.json
+ *       ├── {endpoint-key}.json       <- Masked response
+ *       └── {endpoint-key}.raw.json   <- Original unmasked response
  *
  * The approved directory contains the "golden master" responses.
  * The received directory contains the latest test responses for comparison.
@@ -70,6 +71,16 @@ public class SnapshotManager {
         Path receivedPath = getReceivedPath(endpointKey);
         Files.createDirectories(receivedPath.getParent());
         Files.writeString(receivedPath, normalizeJson(jsonContent));
+    }
+
+    /**
+     * Saves the raw (unmasked) received response for an endpoint.
+     * This is kept alongside the masked version for reference.
+     */
+    public void saveReceivedRaw(String endpointKey, String jsonContent) throws IOException {
+        Path rawPath = getReceivedRawPath(endpointKey);
+        Files.createDirectories(rawPath.getParent());
+        Files.writeString(rawPath, normalizeJson(jsonContent));
     }
 
     /**
@@ -139,6 +150,13 @@ public class SnapshotManager {
      */
     public Path getReceivedPath(String endpointKey) {
         return basePath.resolve(RECEIVED_DIR).resolve(endpointKey + ".json");
+    }
+
+    /**
+     * Returns the path to the raw (unmasked) received snapshot file.
+     */
+    public Path getReceivedRawPath(String endpointKey) {
+        return basePath.resolve(RECEIVED_DIR).resolve(endpointKey + ".raw.json");
     }
 
     /**

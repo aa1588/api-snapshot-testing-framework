@@ -186,10 +186,12 @@ class ApiSnapshotTest {
         log.info("      Masking complete");
         attachJson("Masked Response", maskedResponse);
 
-        // 5. Save received snapshot
+        // 5. Save received snapshot (both masked and raw)
         log.info("[5/6] Saving received snapshot...");
+        snapshotManager.saveReceivedRaw(endpoint.key(), actualResponse);
         snapshotManager.saveReceived(endpoint.key(), maskedResponse);
-        log.info("      Saved to: {}", snapshotManager.getReceivedPath(endpoint.key()));
+        log.info("      Raw: {}", snapshotManager.getReceivedRawPath(endpoint.key()));
+        log.info("      Masked: {}", snapshotManager.getReceivedPath(endpoint.key()));
 
         // 6. Compare or approve
         log.info("[6/6] Checking snapshot status...");
