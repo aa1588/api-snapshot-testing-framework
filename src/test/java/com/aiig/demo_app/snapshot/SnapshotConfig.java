@@ -280,6 +280,11 @@ public class SnapshotConfig {
                    "PUT".equalsIgnoreCase(method) ||
                    "PATCH".equalsIgnoreCase(method);
         }
+
+        @Override
+        public String toString() {
+            return method + " " + url + " [" + key + "]";
+        }
     }
 
     /**

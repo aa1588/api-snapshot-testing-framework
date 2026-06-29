@@ -110,7 +110,28 @@ class ApiSnapshotTest {
         Allure.epic("API Regression Testing");
         Allure.feature(endpoint.key());
         Allure.story(endpoint.method() + " " + endpoint.url());
-        Allure.description(endpoint.description() != null ? endpoint.description() : "Snapshot test for " + endpoint.key());
+
+        // Build detailed description for Allure overview
+        StringBuilder description = new StringBuilder();
+        description.append("## Endpoint Details\n\n");
+        description.append("| Property | Value |\n");
+        description.append("|----------|-------|\n");
+        description.append("| **Key** | `").append(endpoint.key()).append("` |\n");
+        description.append("| **Method** | `").append(endpoint.method()).append("` |\n");
+        description.append("| **URL** | `").append(endpoint.url()).append("` |\n");
+        if (endpoint.requestFile() != null) {
+            description.append("| **Request File** | `").append(endpoint.requestFile()).append("` |\n");
+        }
+        if (endpoint.description() != null && !endpoint.description().isEmpty()) {
+            description.append("| **Description** | ").append(endpoint.description()).append(" |\n");
+        }
+        if (!endpoint.maskingPaths().isEmpty()) {
+            description.append("\n## Masking Paths\n\n");
+            for (String path : endpoint.maskingPaths()) {
+                description.append("- `").append(path).append("`\n");
+            }
+        }
+        Allure.description(description.toString());
 
         log.info("");
         log.info("┌─────────────────────────────────────────────────────────────");
