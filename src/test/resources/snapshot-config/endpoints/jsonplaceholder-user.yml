@@ -3,6 +3,7 @@
 
 endpoint:
   key: jsonplaceholder-user
+  description: This API retrieves a user with id 1.
   method: GET
   url: /users/1
 

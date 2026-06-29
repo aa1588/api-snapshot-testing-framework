@@ -5,6 +5,7 @@ endpoint:
   key: jsonplaceholder-post
   method: GET
   url: /posts/1
+  description: Retrieves a single post by ID from JSONPlaceholder API
 
 masking:
   paths: []
