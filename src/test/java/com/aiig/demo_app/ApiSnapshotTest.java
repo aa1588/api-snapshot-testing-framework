@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.*;
 import org.springframework.web.client.RestClient;
 
@@ -39,19 +38,13 @@ import static org.junit.jupiter.api.Assertions.*;
  *   snapshot.environments.baseline.url
  *   snapshot.environments.current.url
  */
-@SpringBootTest(
-    classes = DemoAppApplication.class,
-    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
-)
+@SpringBootTest(classes = DemoAppApplication.class)
 @DisplayName("API Snapshot Tests")
 @Epic("API Regression Testing")
 @Feature("Snapshot Verification")
 class ApiSnapshotTest {
 
     private static final Logger log = LoggerFactory.getLogger(ApiSnapshotTest.class);
-
-    @LocalServerPort
-    private int port;
 
     // Baseline environment (for capturing snapshots)
     @Value("${snapshot.environments.baseline.url:#{null}}")
@@ -103,8 +96,8 @@ class ApiSnapshotTest {
     }
 
     private String resolveUrl(String url) {
-        if (url == null || url.contains("${local.server.port}")) {
-            return "http://localhost:" + port;
+        if (url == null || url.isBlank()) {
+            throw new IllegalStateException("Environment URL must be configured in application.yml");
         }
         return url;
     }

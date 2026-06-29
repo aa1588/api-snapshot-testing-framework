@@ -216,6 +216,46 @@ mvn test -Dsnapshot.endpoint=order
 # Test failed → check diff, fix code or update baseline if intentional
 ```
 
+## Dual Environment Support
+
+Compare responses between two environments (e.g., old system vs new system during migration).
+
+**Configure in `application.yml`:**
+
+```yaml
+snapshot:
+  environments:
+    baseline:
+      url: https://old-system.example.com    # Source of truth
+      username: api-user
+      password: api-secret
+    current:
+      url: https://new-system.example.com    # System under test
+      username: api-user
+      password: api-secret
+```
+
+**How it works:**
+
+| Command | Environment Used | Purpose |
+|---------|------------------|---------|
+| `mvn test -Dsnapshot.update=true` | BASELINE | Capture snapshot from old system |
+| `mvn test` | CURRENT | Compare new system against baseline |
+
+**Migration workflow:**
+
+```bash
+# 1. Before migration: Capture baseline from old system
+mvn test -Dsnapshot.update=true
+
+# 2. After migration: Verify new system matches
+mvn test
+
+# 3. If test fails, check diff - fix code or update baseline
+```
+
+**Note:** Both environments must have the same endpoint paths. Only the base URL differs.
+
 ## Sample Request
 
 ```bash
